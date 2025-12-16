@@ -46,7 +46,7 @@ INSTALL_DIR="/opt/serverstriker"
 # Validate repo files
 # -----------------------------
 if [ ! -f "./main.py" ] && [ ! -f "./serverstriker.py" ]; then
-  echo "❌ ServerStriker main file not found."
+  echo "❌ serverstriker main file not found."
   echo "✅ Run:"
   echo "   git clone <YOUR_REPO_URL>"
   echo "   cd serverstriker"
@@ -78,7 +78,7 @@ pip3 install psutil requests
 # Make executable + CLI alias
 # -----------------------------
 chmod +x "$INSTALL_DIR/$APP_FILE"
-ln -sf "$INSTALL_DIR/$APP_FILE" /usr/local/bin/ServerStriker
+ln -sf "$INSTALL_DIR/$APP_FILE" /usr/local/bin/serverstriker
 
 # -----------------------------
 # Config directory
@@ -98,10 +98,10 @@ systemctl daemon-reload
 systemctl enable serverstriker
 
 echo ""
-echo "✅ ServerStriker installed successfully!"
+echo "✅ serverstriker installed successfully!"
 echo ""
 echo "Next steps:"
-echo "  1) ServerStriker -init"
+echo "  1) serverstriker -init"
 echo "  2) sudo systemctl start serverstriker"
 echo "  3) sudo systemctl status serverstriker"
 echo ""

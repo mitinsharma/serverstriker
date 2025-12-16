@@ -1,6 +1,7 @@
 __pycache__/
 *.pyc
 *.log
+.idea
 
 # never commit real config/state
 /etc/serverstriker/
