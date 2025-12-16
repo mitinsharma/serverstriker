@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.log
+
+# never commit real config/state
+/etc/serverstriker/
+sst_config.json
+serverstriker_state.txt

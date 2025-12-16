@@ -1,0 +1,15 @@
+[Unit]
+Description=ServerStriker Monitoring Agent
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/ServerStriker -run
+Restart=always
+RestartSec=10
+
+# Needs root because it reads /var/log/auth.log and can clear it
+User=root
+
+[Install]
+WantedBy=multi-user.target

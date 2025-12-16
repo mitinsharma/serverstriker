@@ -1,0 +1,5 @@
+{
+  "server_name": "your-server-name",
+  "webhook_url": "https://your-webhook-url",
+  "services": "nginx,mysql"
+}
