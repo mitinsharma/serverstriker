@@ -3,43 +3,104 @@ set -e
 
 echo "🚀 Installing ServerStriker..."
 
-apt update -y
-apt install -y python3 python3-pip git
-
-INSTALL_DIR="/opt/serverstriker"
-
-# If running via curl|bash, repo isn't cloned yet.
-# So: if this script is run inside a cloned repo, copy files from current dir.
-# If not, instruct user to clone first.
-if [ ! -f "./serverstriker.py" ]; then
-  echo "❌ serverstriker.py not found in current directory."
-  echo "✅ Run:"
-  echo "   git clone <YOUR_REPO_URL> && cd serverstriker && sudo ./install.sh"
+# -----------------------------
+# Check OS
+# -----------------------------
+if ! command -v apt >/dev/null 2>&1; then
+  echo "❌ This installer supports Debian/Ubuntu systems only."
   exit 1
 fi
 
+# -----------------------------
+# Check Python
+# -----------------------------
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "🐍 Python3 not found. Installing..."
+  apt update -y
+  apt install -y python3
+else
+  echo "✅ Python3 found: $(python3 --version)"
+fi
+
+# -----------------------------
+# Check pip
+# -----------------------------
+if ! command -v pip3 >/dev/null 2>&1; then
+  echo "📦 pip3 not found. Installing..."
+  apt install -y python3-pip
+else
+  echo "✅ pip3 found"
+fi
+
+# -----------------------------
+# Install git (needed for repo clone workflows)
+# -----------------------------
+if ! command -v git >/dev/null 2>&1; then
+  echo "📦 Installing git..."
+  apt install -y git
+fi
+
+INSTALL_DIR="/opt/serverstriker"
+
+# -----------------------------
+# Validate repo files
+# -----------------------------
+if [ ! -f "./main.py" ] && [ ! -f "./serverstriker.py" ]; then
+  echo "❌ ServerStriker main file not found."
+  echo "✅ Run:"
+  echo "   git clone <YOUR_REPO_URL>"
+  echo "   cd serverstriker"
+  echo "   sudo ./install.sh"
+  exit 1
+fi
+
+# Normalize filename (support main.py or serverstriker.py)
+APP_FILE="serverstriker.py"
+if [ -f "./main.py" ]; then
+  APP_FILE="main.py"
+fi
+
+# -----------------------------
+# Install application
+# -----------------------------
+echo "📂 Installing to $INSTALL_DIR"
 mkdir -p "$INSTALL_DIR"
 cp -r ./* "$INSTALL_DIR"
 
-# deps
+# -----------------------------
+# Python dependencies
+# -----------------------------
+echo "📦 Installing Python dependencies..."
 pip3 install --upgrade pip
 pip3 install psutil requests
 
-# Make executable + symlink as command
-chmod +x "$INSTALL_DIR/serverstriker.py"
-ln -sf "$INSTALL_DIR/serverstriker.py" /usr/local/bin/ServerStriker
+# -----------------------------
+# Make executable + CLI alias
+# -----------------------------
+chmod +x "$INSTALL_DIR/$APP_FILE"
+ln -sf "$INSTALL_DIR/$APP_FILE" /usr/local/bin/ServerStriker
 
-# Config dir
+# -----------------------------
+# Config directory
+# -----------------------------
 mkdir -p /etc/serverstriker
 
-# systemd
+# -----------------------------
+# systemd service
+# -----------------------------
+if [ ! -f "$INSTALL_DIR/serverstriker.service" ]; then
+  echo "❌ serverstriker.service not found."
+  exit 1
+fi
+
 cp "$INSTALL_DIR/serverstriker.service" /etc/systemd/system/serverstriker.service
 systemctl daemon-reload
 systemctl enable serverstriker
 
 echo ""
-echo "✅ Installed."
-echo "Next:"
+echo "✅ ServerStriker installed successfully!"
+echo ""
+echo "Next steps:"
 echo "  1) ServerStriker -init"
 echo "  2) sudo systemctl start serverstriker"
 echo "  3) sudo systemctl status serverstriker"
